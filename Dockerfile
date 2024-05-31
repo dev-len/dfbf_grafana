@@ -1,14 +1,7 @@
 FROM grafana/grafana:latest
 
-COPY . /usr/share/grafana
-
-WORKDIR /usr/share/grafana
-
-RUN yarn install --pure-lockfile \
-    && yarn build \
-    && go mod tidy \
-    && go build -o bin/grafana-server ./pkg/cmd/grafana-server
+COPY grafana.ini /etc/grafana/grafana.ini
 
 EXPOSE 3000
 
-CMD ["./bin/grafana-server", "--homepath", "/usr/share/grafana"]
+CMD ["grafana-server", "--homepath=/usr/share/grafana", "--config=/etc/grafana/grafana.ini", "cfg:default.paths.data=/var/lib/grafana", "cfg:default.paths.logs=/var/log/grafana", "cfg:default.paths.plugins=/var/lib/grafana/plugins"]
